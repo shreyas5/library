@@ -9,13 +9,12 @@ namespace Library
         MySqlConnection connection;
         public AutoComplete()
         {
-            string connectionString = "datasource=127.0.0.1; port=3306; username=root; password=; database=library;";
+            string connectionString = "datasource='127.0.0.1'; port='3306'; username='root'; password=''; database='library';";
             connection = new MySqlConnection(connectionString);
         }
-        public void bookcollection(TextBox tb)
+        public void update(String query, TextBox tb)
         {
             connection.Open();
-            string query = string.Format("SELECT bookName FROM bookcollection");
             MySqlCommand command = new MySqlCommand(query, connection);
             AutoCompleteStringCollection myCollection = new AutoCompleteStringCollection();
             try

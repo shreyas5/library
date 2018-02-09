@@ -18,11 +18,20 @@ namespace Library
                 string connectionString = "datasource='127.0.0.1'; port='3306'; username='root'; password=''; database='library';";
                 connection = new MySqlConnection(connectionString);
 
-                //Bookcollection auto 
-                auto.bookcollection(bookName_tb_addBook);
+                //Bookname autocomplete in bookcollection
+                string query = string.Format("SELECT bookName FROM bookcollection");
+                auto.update(query, bookName_tb_addBook);
+
+                //Author autocomplete in bookcollection
+                query = string.Format("SELECT author FROM bookcollection");
+                auto.update(query, author_tb_addBook);
+
+                //USN autocomplete in bookissue
+                query = string.Format("SELECT usn FROM student");
+                auto.update(query, usn_tb_issue);
 
                 //Book collection gridview
-                string query = string.Format($@"SELECT BookName,BookID,Edition,Author,Available FROM bookcollection");
+                query = string.Format($@"SELECT BookName,BookID,Edition,Author,Available FROM bookcollection");
                 gv.update(query, books_gv_bookCollection);
 
                 //Book issue gridview
@@ -56,68 +65,18 @@ namespace Library
         //Create student profile
         private void student_b_profile_Click(object sender, EventArgs e)
         {
-            string query = string.Format($"INSERT INTO student (usn,studentName) VALUES ('{usn_TB_studentProfile.Text}','{studentName_TB_studentProfile.Text}')");
-            MySqlCommand command = new MySqlCommand(query, connection);
-            try
+            if (studentName_TB_studentProfile.Text!="" && usn_TB_studentProfile.Text!="")
             {
-                connection.Open();
-                command.ExecuteNonQuery();
-
-                MessageBox.Show("Student Profile Created");
-                studentName_TB_studentProfile.Clear();
-                usn_TB_studentProfile.Clear();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-
-        //Create teacher profile
-        private void teacher_b_profile_Click(object sender, EventArgs e)
-        {
-            string query = string.Format($"INSERT INTO teacher (teacherName,teacherID) VALUES ('{teacherName_TB_teacherProfile.Text}','{teacherID_TB_teacherProfile.Text}')");
-            MySqlCommand command = new MySqlCommand(query, connection);
-            try
-            {
-                connection.Open();
-                command.ExecuteNonQuery();
-
-                MessageBox.Show("Teacher Profile Created");
-                teacherName_TB_teacherProfile.Clear();
-                teacherID_TB_teacherProfile.Clear();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            finally
-            {
-                connection.Close();
-            }
-        }
-        
-        //Create login account
-        //TODO: Check if text is available before creating
-        private void create_b_account_Click(object sender, EventArgs e)
-        {
-            if (password_tb_createAccount.Text == rePassword_tb_createAccount.Text)
-            {
-                string query = string.Format($"INSERT INTO login (loginName,password) VALUES ('{name_tb_createAccount.Text}','{password_tb_createAccount.Text}')");
+                string query = string.Format($"INSERT INTO student (usn,studentName) VALUES ('{usn_TB_studentProfile.Text}','{studentName_TB_studentProfile.Text}')");
                 MySqlCommand command = new MySqlCommand(query, connection);
                 try
                 {
                     connection.Open();
                     command.ExecuteNonQuery();
-                    MessageBox.Show("Account created!");
 
-                    name_tb_createAccount.Clear();
-                    password_tb_createAccount.Clear();
-                    rePassword_tb_createAccount.Clear();
+                    MessageBox.Show("Student Profile Created");
+                    studentName_TB_studentProfile.Clear();
+                    usn_TB_studentProfile.Clear();
                 }
                 catch (Exception ex)
                 {
@@ -130,7 +89,79 @@ namespace Library
             }
             else
             {
-                MessageBox.Show("Passwords do not match");
+                MessageBox.Show("Text fiels can not be empty");
+            }
+            
+        }
+
+        //Create teacher profile
+        private void teacher_b_profile_Click(object sender, EventArgs e)
+        {
+            if(teacherName_TB_teacherProfile.Text!="" && teacherID_TB_teacherProfile.Text != "")
+            {
+                string query = string.Format($"INSERT INTO teacher (teacherName,teacherID) VALUES ('{teacherName_TB_teacherProfile.Text}','{teacherID_TB_teacherProfile.Text}')");
+                MySqlCommand command = new MySqlCommand(query, connection);
+                try
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+
+                    MessageBox.Show("Teacher Profile Created");
+                    teacherName_TB_teacherProfile.Clear();
+                    teacherID_TB_teacherProfile.Clear();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Text fields can not be empty");
+            }
+        }
+        
+        //Create login account
+        //TODO: Check if text is available before creating
+        private void create_b_account_Click(object sender, EventArgs e)
+        {
+            if(name_tb_createAccount.Text != "" && password_tb_createAccount.Text != "" && rePassword_tb_createAccount.Text != "")
+            {
+                if (password_tb_createAccount.Text == rePassword_tb_createAccount.Text)
+                {
+                    string query = string.Format($"INSERT INTO login (loginName,password) VALUES ('{name_tb_createAccount.Text}','{password_tb_createAccount.Text}')");
+                    MySqlCommand command = new MySqlCommand(query, connection);
+                    try
+                    {
+                        connection.Open();
+                        command.ExecuteNonQuery();
+                        MessageBox.Show("Account created!");
+
+                        name_tb_createAccount.Clear();
+                        password_tb_createAccount.Clear();
+                        rePassword_tb_createAccount.Clear();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
+                    finally
+                    {
+                        connection.Close();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Passwords do not match");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Text boxes can not be empty");
             }
         }
 
@@ -167,39 +198,52 @@ namespace Library
         //Add books to the book collection
         private void add_b_addBook_Click(object sender, EventArgs e)
         {
-            string query = string.Format($"INSERT INTO bookcollection (bookName,bookID,edition,author) VALUES ('{bookName_tb_addBook.Text}','{bookID_tb_addBook.Text}','{edition_tb_addBook.Text}','{author_tb_addBook.Text}')");
-            MySqlCommand command = new MySqlCommand(query, connection);
-            try
+            if(bookName_tb_addBook.Text!="" && bookID_tb_addBook.Text!="" && edition_tb_addBook.Text!="" && author_tb_addBook.Text != "")
             {
-                connection.Open();
-                command.ExecuteNonQuery();
+                string query = string.Format($"INSERT INTO bookcollection (bookName,bookID,edition,author) VALUES ('{bookName_tb_addBook.Text}','{bookID_tb_addBook.Text}','{edition_tb_addBook.Text}','{author_tb_addBook.Text}')");
+                MySqlCommand command = new MySqlCommand(query, connection);
+                try
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
 
-                MessageBox.Show("Book added to the Collection");
+                    MessageBox.Show("Book added to the Collection");
 
-                bookName_tb_addBook.Clear();
-                bookID_tb_addBook.Clear();
-                edition_tb_addBook.Clear();
-                author_tb_addBook.Clear();
+                    bookName_tb_addBook.Clear();
+                    bookID_tb_addBook.Clear();
+                    edition_tb_addBook.Clear();
+                    author_tb_addBook.Clear();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+                finally
+                {
+                    connection.Close();
+
+                    //Bookname autocomplete in bookcollection
+                    query = string.Format("SELECT bookName FROM bookcollection");
+                    auto.update(query, bookName_tb_addBook);
+
+                    //Author autocomplete in bookcollection
+                    query = string.Format("SELECT author FROM bookcollection");
+                    auto.update(query, author_tb_addBook);
+
+                    //Bookcollection gridview update
+                    query = string.Format($"SELECT BookName,BookID,Edition,Author,Available FROM bookcollection");
+                    gv.update(query, books_gv_bookCollection);
+
+                    //Book issue gridview
+                    query = string.Format($@"SELECT BookName,BookID,Edition,Author FROM bookcollection WHERE available='yes'");
+                    gv.update(query, books_gv_bookIssue);
+                }
             }
-            catch(Exception ex)
+            else
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Text fields can not be empty");
             }
-            finally
-            {
-                connection.Close();
-
-                //Bookcollection autocomplete
-                auto.bookcollection(bookName_tb_addBook);
-
-                //Bookcollection gridview update
-                query = string.Format($"SELECT BookName,BookID,Edition,Author,Available FROM bookcollection");
-                gv.update(query, books_gv_bookCollection);
-
-                //Book issue gridview
-                query = string.Format($@"SELECT BookName,BookID,Edition,Author FROM bookcollection WHERE available='yes'");
-                gv.update(query, books_gv_bookIssue);
-            }
+            
         }
 
         //Remove books from book collection
@@ -372,6 +416,13 @@ namespace Library
                 }
                 connection.Close();
             }
+        }
+
+        // Book issue gridview update using bookid
+        private void bookIDStudent_tb_issue_TextChanged(object sender, EventArgs e)
+        {
+            string query = string.Format($@"SELECT BookName,BookID,Edition,Author FROM bookcollection WHERE bookID LIKE '{bookIDStudent_tb_issue.Text}%' && available='yes'");
+            gv.update(query, books_gv_bookIssue);
         }
 
         //Teacher book issue
@@ -922,12 +973,21 @@ namespace Library
             }
         }
 
-        // Student gridviewe update in bookrenew using student name
+        // Student gridview update in bookrenew using student name
         private void studentName_tb_bookRenew_TextChanged(object sender, EventArgs e)
         {
             String query = string.Format($@"SELECT s.StudentName,s.USN,bc.BookName,bi.BookID
                                                  FROM student s,bookcollection bc, bookissue bi
                                                  WHERE s.usn = bi.usn && bi.bookid = bc.bookid && bi.bookID = bc.bookID && returnDate IS NULL && s.studentName LIKE '{studentName_tb_bookRenew.Text}%'");
+            gv.update(query, student_gv_bookRenew);
+        }
+
+        // Student gridview update in bookrenew using USN
+        private void usn_tb_bookRenew_TextChanged(object sender, EventArgs e)
+        {
+            String query = string.Format($@"SELECT s.StudentName,s.USN,bc.BookName,bi.BookID
+                                                 FROM student s,bookcollection bc, bookissue bi
+                                                 WHERE s.usn = bi.usn && bi.bookid = bc.bookid && bi.bookID = bc.bookID && returnDate IS NULL && s.usn LIKE '{usn_tb_bookRenew.Text}%'");
             gv.update(query, student_gv_bookRenew);
         }
     }

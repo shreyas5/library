@@ -257,6 +257,7 @@
             this.bookIDStudent_tb_issue.Name = "bookIDStudent_tb_issue";
             this.bookIDStudent_tb_issue.Size = new System.Drawing.Size(135, 20);
             this.bookIDStudent_tb_issue.TabIndex = 2;
+            this.bookIDStudent_tb_issue.TextChanged += new System.EventHandler(this.bookIDStudent_tb_issue_TextChanged);
             // 
             // label23
             // 
@@ -668,6 +669,7 @@
             this.usn_tb_bookRenew.Name = "usn_tb_bookRenew";
             this.usn_tb_bookRenew.Size = new System.Drawing.Size(133, 20);
             this.usn_tb_bookRenew.TabIndex = 1;
+            this.usn_tb_bookRenew.TextChanged += new System.EventHandler(this.usn_tb_bookRenew_TextChanged);
             // 
             // label39
             // 
@@ -820,6 +822,8 @@
             // 
             // author_tb_addBook
             // 
+            this.author_tb_addBook.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.author_tb_addBook.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.author_tb_addBook.Location = new System.Drawing.Point(114, 178);
             this.author_tb_addBook.Name = "author_tb_addBook";
             this.author_tb_addBook.Size = new System.Drawing.Size(146, 20);
